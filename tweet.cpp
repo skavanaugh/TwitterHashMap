@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   assert(argc == 2);
 
   char* filename = argv[1];
-  ifstream inputFile(filename);
+  ifstream inputFile1(filename);
   string name = "";
   const char* cleansedFileName = "cleantweets";
   ofstream cleansedFile(cleansedFileName);
@@ -32,13 +32,13 @@ int main(int argc, char** argv) {
 
   // clean the tweets file
 
-  if (inputFile.is_open() && cleansedFile.is_open()) {
-    while (inputFile.good()) {  
-      ch = inputFile.get();
+  if (inputFile1.is_open() && cleansedFile.is_open()) {
+    while (inputFile1.good()) {  
+      ch = inputFile1.get();
       if (isspace(ch))
         cleansedFile << endl;
-      while (!isalpha(ch) && inputFile.good()) {
-          ch = inputFile.get();
+      while (!isalpha(ch) && inputFile1.good()) {
+          ch = inputFile1.get();
       }
       if (isalpha(ch)) {
         cleansedFile << (char) tolower(ch);
@@ -46,9 +46,15 @@ int main(int argc, char** argv) {
     }
   }
 
-  inputFile.close();
+  inputFile1.close();
   cleansedFile.close();
-/*
+
+  long wordCount = 0;
+  long distinctWordCount = 0;
+
+  // now open the cleansed file as an input file
+  ifstream inputFile(cleansedFileName);
+
   // this map will hold a name and a count of how many times this name appears in an input file
   map<string,int> tweetMap;
 
@@ -57,7 +63,8 @@ int main(int argc, char** argv) {
 
   if (inputFile.is_open()) {
     while (getline(inputFile,name)) {
-      retPair = naughtyNice.insert(pair<string,int>(name,1));
+      retPair = tweetMap.insert(pair<string,int>(name,1));
+      wordCount++;
 
       // if the key is already in the map, the associated value is incremented by 1
       if (retPair.second == false)
@@ -65,61 +72,41 @@ int main(int argc, char** argv) {
     }
   }
   inputFile.close();
+  distinctWordCount = (long) tweetMap.size();
 
-  // an iterator to the naughtyNice map
+  // an iterator to the tweetMap map
   map<string,int>::iterator it;
 
   // this multimap's key will be the number of times a name appeared in the input file
   // its value will be the name
   // this will allow for a sorted print
-  multimap<int,string> rankedNaughtyNice;
+  multimap<int,string> rankedTweets;
 
-  for (it=naughtyNice.begin(); it!=naughtyNice.end(); it++) {
-    rankedNaughtyNice.insert(pair<int,string>(it->second,it->first));
+  for (it=tweetMap.begin(); it!=tweetMap.end(); it++) {
+    rankedTweets.insert(pair<int,string>(it->second,it->first));
   }
 
   // reverse iterator of ranked multimap
-  multimap<int,string>::reverse_iterator rankRevIt = rankedNaughtyNice.rbegin(); 
+  multimap<int,string>::reverse_iterator rankRevIt = rankedTweets.rbegin(); 
 
   ofstream outputFile(outputFileName);
   if (outputFile.is_open()) {
 
-    outputFile << "Naughty / Nice List with threshold = " << threshold << endl << endl;
+    outputFile << "Summary Data for 10,000 Tweets" << endl << endl;
+    outputFile << "Number of unique words: " << distinctWordCount << endl;
+    outputFile << "Total number of words: " << wordCount << endl;
+    outputFile << "Lexical Diversity (Total number of words / Number of unique words): ";
+    outputFile << (float) wordCount/distinctWordCount << endl << endl << endl;
 
-    if (rankRevIt->first > threshold)
-      outputFile << "Nice List:" << endl;
-    else
-      outputFile << "Nobody on Nice List!" << endl; 
-  
-    while (rankRevIt->first > threshold && rankRevIt!=rankedNaughtyNice.rend()) {  
-      outputFile << rankRevIt->second << " " << rankRevIt->first << endl;
-      rankRevIt++;
-    }
-
+    outputFile << "Here is a list of each unique word and the number of times it appears:" << endl;
     outputFile << endl;
-    if (rankRevIt->first == threshold)
-      outputFile << "Right on the Naughty/Nice threshold:" << endl;
-    else
-      outputFile << "Nobody right on the Naughty/Nice threshold." << endl; 
 
-    while (rankRevIt->first == threshold && rankRevIt!=rankedNaughtyNice.rend()) {  
+    for ( ; rankRevIt!=rankedTweets.rend(); rankRevIt++) {
       outputFile << rankRevIt->second << " " << rankRevIt->first << endl;
-      rankRevIt++;
-    }
-  
-    outputFile << endl;
-    if (rankRevIt->first < threshold)
-      outputFile << "Naughty list:" << endl;
-    else
-      outputFile << "Nobody on the Naughty List!" << endl; 
-
-    while (rankRevIt->first < threshold && rankRevIt!=rankedNaughtyNice.rend()) {  
-      outputFile << rankRevIt->second << " " << rankRevIt->first << endl;
-      rankRevIt++;
-    }
+    } 
   }
 
   outputFile.close();
-*/
+
   return 0;
 }
