@@ -25,22 +25,32 @@ int main(int argc, char** argv) {
   char* filename = argv[1];
   ifstream inputFile(filename);
   int threshold = atoi(argv[2]);
-  string name;
+  string name = "";
 
+  // this map will hold a name and a count of how many times this name appears in an input file
   map<string,int> naughtyNice;
+
+  // return type from insert into map that returns iterator and boolean
   pair<map<string,int>::iterator,bool> retPair;
 
   if (inputFile.is_open()) {
-    while (inputFile.good()) {
-      getline(inputFile,name);
+    while (getline(inputFile,name)) {
+      // getline(inputFile,name);
       retPair = naughtyNice.insert(pair<string,int>(name,1));
+
+      // if the key is already in the map, the associated value is incremented by 1
       if (retPair.second == false)
         retPair.first->second++;
     }
   }
   inputFile.close();
 
+  // an iterator to the naughtyNice map
   map<string,int>::iterator it;
+
+  // this multimap's key will be the number of times a name appeared in the input file
+  // its value will be the name
+  // this will allow for a sorted print
   multimap<int,string> rankedNaughtyNice;
 
   for (it=naughtyNice.begin(); it!=naughtyNice.end(); it++) {
