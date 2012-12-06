@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <string>
 #include <map>
-#include <vector>
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -10,7 +9,6 @@ using std::map;
 using std::multimap;
 using std::pair;
 using std::string;
-using std::vector;
 using std::cout;
 using std::endl;
 using std::ifstream;
@@ -26,6 +24,7 @@ int main(int argc, char** argv) {
   ifstream inputFile(filename);
   int threshold = atoi(argv[2]);
   string name = "";
+  const char* outputFileName = "NaughtyNiceList.log";
 
   // this map will hold a name and a count of how many times this name appears in an input file
   map<string,int> naughtyNice;
@@ -60,15 +59,16 @@ int main(int argc, char** argv) {
   // reverse iterator of ranked multimap
   multimap<int,string>::reverse_iterator rankRevIt = rankedNaughtyNice.rbegin(); 
 
-  ofstream outputFile("NaughtyNiceList.log");
+  ofstream outputFile(outputFileName);
   if (outputFile.is_open()) {
+
     outputFile << "Naughty / Nice List with threshold = " << threshold << endl << endl;
+
     if (rankRevIt->first > threshold)
       outputFile << "Nice List:" << endl;
     else
-      outputFile << "Nobody on Nice List!" << endl << endl; 
+      outputFile << "Nobody on Nice List!" << endl; 
   
-
     while (rankRevIt->first > threshold && rankRevIt!=rankedNaughtyNice.rend()) {  
       outputFile << rankRevIt->second << " " << rankRevIt->first << endl;
       rankRevIt++;
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     if (rankRevIt->first == threshold)
       outputFile << "Right on the Naughty/Nice threshold:" << endl;
     else
-      outputFile << "Nobody right on the Naughty/Nice threshold." << endl << endl; 
+      outputFile << "Nobody right on the Naughty/Nice threshold." << endl; 
 
     while (rankRevIt->first == threshold && rankRevIt!=rankedNaughtyNice.rend()) {  
       outputFile << rankRevIt->second << " " << rankRevIt->first << endl;
