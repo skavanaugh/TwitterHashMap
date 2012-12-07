@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
   ifstream inputFile(filename);
   int threshold = atoi(argv[2]);
   string name = "";
-  const char* outputFileName = "NaughtyNiceList.log";
+  const char* outputFileName = "NaughtyNice.log";
 
   // this map will hold a name and a count of how many times this name appears in an input file
   map<string,int> naughtyNice;
